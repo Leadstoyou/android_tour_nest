@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "788962792629",
+    "project_id": "tour-nest-e1492",
+    "storage_bucket": "tour-nest-e1492.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:788962792629:android:e2855678536ec22ccfdafc",
+        "android_client_info": {
+          "package_name": "com.example.tour_nest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-yqqdWo_LQs2FzEEumO_YZhs7QxTcU-0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
