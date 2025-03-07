@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Image -->
+        <ImageView
+            android:id="@+id/imageViewPackage"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:scaleType="centerCrop"/>
+
+        <!-- Bookmark Icon -->
+        <ImageView
+            android:id="@+id/bookmarkIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="12dp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_bookmark"
+            app:tint="@android:color/white" />
+
+        <!-- Text Container: Package Name + Location Icon -->
+        <LinearLayout
+            android:id="@+id/textContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="12dp"
+            android:layout_marginBottom="8dp"
+            android:layout_alignParentBottom="true">
+
+            <!-- Package Name (Now Above Rating) -->
+            <TextView
+                android:id="@+id/textViewPackageName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cox’s Bazar"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <!-- Location Row (Location Icon + Name) -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/textViewRating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:text="★★★★★"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentEnd="true"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Rating (Still at Bottom Right) -->
+
+
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

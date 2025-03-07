@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="white">#FFFFFF</color>
     <color name="blue">#0069D9</color>
+    <color name="light_blue">#0094FF</color>
+    <color name="lighter_blue">#CCEAFF</color>
+    <color name="grey">#EDF0F7</color>
+    <color name="grey_btn">#868688</color>
     <color name="facebook_blue">#3D578F</color>
     <color name="google_red">#BF3B31</color>
+    <color name="yellow">#FFFF00</color>
 </resources>

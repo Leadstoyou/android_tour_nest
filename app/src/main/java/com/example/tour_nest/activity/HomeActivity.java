@@ -1,79 +1,172 @@
 package com.example.tour_nest.activity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.tour_nest.R;
-import com.example.tour_nest.adapter.home.BannerAdapter;
 import com.example.tour_nest.adapter.home.CategoryAdapter;
-import com.example.tour_nest.adapter.home.DestinationAdapter;
+import com.example.tour_nest.adapter.home.CategorySliderAdapter;
+import com.example.tour_nest.adapter.home.PlaceAdapter;
+import com.example.tour_nest.adapter.home.ServiceAdapter;
 import com.example.tour_nest.adapter.home.TourAdapter;
-import com.example.tour_nest.databinding.ActivityHomeBinding;
-import com.example.tour_nest.model.Banner;
-import com.example.tour_nest.model.Category;
-import com.example.tour_nest.model.Destination;
-import com.example.tour_nest.model.Tour;
+import com.example.tour_nest.model.home.Category;
+import com.example.tour_nest.model.home.CategorySlider;
+import com.example.tour_nest.model.home.Place;
+import com.example.tour_nest.model.home.Service;
+import com.example.tour_nest.model.home.TourPackage;
+import com.example.tour_nest.util.LogUtil;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeActivity extends AppCompatActivity {
-    private ActivityHomeBinding binding;
-    private BannerAdapter bannerAdapter;
+public class HomeActivity extends AppCompatActivity implements CategoryAdapter.OnCategoryClickListener {
+    private RecyclerView categoryRecyclerView;
     private CategoryAdapter categoryAdapter;
-    private DestinationAdapter destinationAdapter;
-    private TourAdapter tourAdapter;
+    private List<Category> categoryList;
 
+    private ViewPager2 tourSlider;
+    private TourAdapter tourAdapter;
+    private List<TourPackage> tourList;
+
+
+    private RecyclerView categorSlideryRecyclerView;
+    private CategorySliderAdapter categorySliderAdapter;
+    private List<CategorySlider> categorySliderList;
+
+
+    private MaterialButton btnSolo, btnFamily;
+
+    private RecyclerView placeRecyclerView;
+    private PlaceAdapter placeAdapter;
+    private List<Place> placeList;
+    private BottomNavigationView bottomNavigationView;
+
+    private RecyclerView servicesRecyclerView;
+    private ServiceAdapter serviceAdapter;
+    private List<Service> serviceList;
+
+    @SuppressLint("UseCompatLoadingForColorStateLists")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityHomeBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        setContentView(R.layout.activity_home);
+        categoryRecyclerView = findViewById(R.id.categoryRecyclerView);
+        categoryRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
-        setupBanner();
-        setupCategories();
-        setupDestinations();
-        setupTours();
+        categoryList = new ArrayList<>();
+        categoryList.add(new Category("All", false));
+        categoryList.add(new Category("Asia", true)); // Mặc định chọn
+        categoryList.add(new Category("Europe", false));
+        categoryList.add(new Category("America", false));
+        categoryList.add(new Category("Oceania", false));
+
+        categoryAdapter = new CategoryAdapter(categoryList, this);
+        categoryRecyclerView.setAdapter(categoryAdapter);
+
+
+        tourSlider = findViewById(R.id.tourSlider);
+        //--------------------------------
+        categorSlideryRecyclerView = findViewById(R.id.categorySliderRecyclerView);
+        categorSlideryRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
+        categorySliderList = new ArrayList<>();
+        categorySliderList.add(new CategorySlider(R.drawable.ic_mountain, "Mountain"));
+        categorySliderList.add(new CategorySlider(R.drawable.ic_beach, "Beach"));
+        categorySliderList.add(new CategorySlider(R.drawable.ic_history, "History"));
+
+        categorySliderAdapter = new CategorySliderAdapter(this, categorySliderList);
+        categorSlideryRecyclerView.setAdapter(categorySliderAdapter);
+
+
+        // Tạo danh sách Tour Packages
+        tourList = new ArrayList<>();
+        tourList.add(new TourPackage("https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcQSXSYMy134UZwQw2ZFN-nCLwjZInk4mr6azYQVFwwEImkHNEpzSJ1Rb8aTVdGkUI7sgQ4TdU0gX-qcGLnI1AEKvWMJWL2-T2wz5npdoQ", "Maldives Package", "South Asia", 4.6f));
+        tourList.add(new TourPackage("https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcQSXSYMy134UZwQw2ZFN-nCLwjZInk4mr6azYQVFwwEImkHNEpzSJ1Rb8aTVdGkUI7sgQ4TdU0gX-qcGLnI1AEKvWMJWL2-T2wz5npdoQ", "Paris Getaway", "France", 4.8f));
+        tourList.add(new TourPackage("https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcQSXSYMy134UZwQw2ZFN-nCLwjZInk4mr6azYQVFwwEImkHNEpzSJ1Rb8aTVdGkUI7sgQ4TdU0gX-qcGLnI1AEKvWMJWL2-T2wz5npdoQ", "Bali Adventure", "Indonesia", 4.7f));
+
+        tourAdapter = new TourAdapter(this, tourList);
+        tourSlider.setAdapter(tourAdapter);
+
+        //------------------------------------
+        MaterialButtonToggleGroup toggleGroup = findViewById(R.id.toggleGroup);
+        btnSolo = findViewById(R.id.btnSolo);
+        btnFamily = findViewById(R.id.btnFamily);
+
+        toggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (checkedId == R.id.btnSolo) {
+                btnSolo.setBackgroundTintList(getResources().getColorStateList(R.color.light_blue));
+                btnSolo.setTextColor(getResources().getColor(R.color.white));
+
+                btnFamily.setBackgroundTintList(getResources().getColorStateList(R.color.lighter_blue));
+                btnFamily.setTextColor(getResources().getColor(R.color.light_blue));
+
+            } else if (checkedId == R.id.btnFamily) {
+                btnFamily.setBackgroundTintList(getResources().getColorStateList(R.color.light_blue));
+                btnFamily.setTextColor(getResources().getColor(R.color.white));
+
+                btnSolo.setBackgroundTintList(getResources().getColorStateList(R.color.lighter_blue));
+                btnSolo.setTextColor(getResources().getColor(R.color.light_blue));
+            }
+        });
+
+
+        placeRecyclerView = findViewById(R.id.placeRecyclerView);
+        placeRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
+        placeList = new ArrayList<>();
+        placeList.add(new Place("https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcQSXSYMy134UZwQw2ZFN-nCLwjZInk4mr6azYQVFwwEImkHNEpzSJ1Rb8aTVdGkUI7sgQ4TdU0gX-qcGLnI1AEKvWMJWL2-T2wz5npdoQ", "Saintmartin", 4.0f));
+        placeList.add(new Place("https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcQSXSYMy134UZwQw2ZFN-nCLwjZInk4mr6azYQVFwwEImkHNEpzSJ1Rb8aTVdGkUI7sgQ4TdU0gX-qcGLnI1AEKvWMJWL2-T2wz5npdoQ", "Bandarban", 4.0f));
+        placeList.add(new Place("https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcQSXSYMy134UZwQw2ZFN-nCLwjZInk4mr6azYQVFwwEImkHNEpzSJ1Rb8aTVdGkUI7sgQ4TdU0gX-qcGLnI1AEKvWMJWL2-T2wz5npdoQ", "Bandarban", 4.0f));
+        placeList.add(new Place("https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcQSXSYMy134UZwQw2ZFN-nCLwjZInk4mr6azYQVFwwEImkHNEpzSJ1Rb8aTVdGkUI7sgQ4TdU0gX-qcGLnI1AEKvWMJWL2-T2wz5npdoQ", "Bandarban", 4.0f));
+
+        placeAdapter = new PlaceAdapter(this, placeList);
+        placeRecyclerView.setAdapter(placeAdapter);
+        //-------------------------------------------------------
+        bottomNavigationView = findViewById(R.id.bottomNavigation);
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+
+            if (itemId == R.id.nav_home) {
+                return true;
+            } else if (itemId == R.id.nav_favorite) {
+                return true;
+            } else if (itemId == R.id.nav_more) {
+                return true;
+            }
+
+            return false;
+        });
+        //-------------------------------------------------------------------
+        servicesRecyclerView = findViewById(R.id.servicesRecyclerView);
+        servicesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        serviceList = new ArrayList<>();
+        serviceList.add(new Service(R.drawable.ic_safety, "Safety Insured", "There are many variations of passages Lorem."));
+        serviceList.add(new Service(R.drawable.ic_sponsor, "Become a Sponsor", "There are many variations of passages Lorem."));
+        serviceList.add(new Service(R.drawable.ic_support, "24X7 Help & Support", "There are many variations of passages Lorem."));
+
+        serviceAdapter = new ServiceAdapter(this, serviceList);
+        servicesRecyclerView.setAdapter(serviceAdapter);
     }
 
-    private void setupBanner() {
-        List<Banner> banners = new ArrayList<>();
-        banners.add(new Banner(R.drawable.mocchau));
-        banners.add(new Banner(R.drawable.mocchau));
-
-        bannerAdapter = new BannerAdapter(banners);
-        binding.viewPagerBanner.setAdapter(bannerAdapter);
-    }
-
-    private void setupCategories() {
-        List<Category> categories = new ArrayList<>();
-        categories.add(new Category("Du lịch sinh thái", R.drawable.mocchau));
-        categories.add(new Category("Du lịch văn hóa", R.drawable.mocchau));
-
-        categoryAdapter = new CategoryAdapter(categories);
-        binding.recyclerCategories.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        binding.recyclerCategories.setAdapter(categoryAdapter);
-    }
-
-    private void setupDestinations() {
-        List<Destination> destinations = new ArrayList<>();
-        destinations.add(new Destination("Đà Nẵng", R.drawable.mocchau));
-        destinations.add(new Destination("Huế", R.drawable.mocchau));
-
-        destinationAdapter = new DestinationAdapter(destinations);
-        binding.recyclerDestinations.setLayoutManager(new GridLayoutManager(this, 2));
-        binding.recyclerDestinations.setAdapter(destinationAdapter);
-    }
-
-    private void setupTours() {
-        List<Tour> tours = new ArrayList<>();
-        tours.add(new Tour("Sapa", "TP. Hồ Chí Minh", "25/02/2025", "10.990.000 đ", R.drawable.mocchau));
-        tours.add(new Tour("Mộc Châu", "TP. Hồ Chí Minh", "25/02/2025", "10.990.000 đ", R.drawable.mocchau));
-
-        tourAdapter = new TourAdapter(tours);
-        binding.recyclerTours.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        binding.recyclerTours.setAdapter(tourAdapter);
+    @Override
+    public void onCategoryClick(int position) {
+        for (Category category : categoryList) {
+            category.setSelected(false);
+        }
+        categoryList.get(position).setSelected(true);
+        categoryAdapter.notifyDataSetChanged();
     }
 }

@@ -1,5 +1,6 @@
 package com.example.tour_nest.adapter.home;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,46 +8,58 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.tour_nest.R;
-import com.example.tour_nest.model.Tour;
+import com.example.tour_nest.model.home.TourPackage;
+import com.squareup.picasso.Picasso;
 import java.util.List;
 
-public class TourAdapter extends RecyclerView.Adapter<TourAdapter.TourViewHolder> {
-    private List<Tour> tourList;
+public class TourAdapter extends RecyclerView.Adapter<TourAdapter.ViewHolder> {
+    private List<TourPackage> tourList;
+    private Context context;
 
-    public TourAdapter(List<Tour> tourList) {
+    public TourAdapter(Context context, List<TourPackage> tourList) {
+        this.context = context;
         this.tourList = tourList;
     }
 
     @NonNull
     @Override
-    public TourViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_tour, parent, false);
-        return new TourViewHolder(view);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(com.example.tour_nest.R.layout.tour_item, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TourViewHolder holder, int position) {
-        Tour tour = tourList.get(position);
-        holder.image.setImageResource(tour.getImageResId());
-        holder.title.setText(tour.getTitle());
-        holder.price.setText(tour.getPrice());
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        TourPackage tour = tourList.get(position);
+        holder.tourTitle.setText(tour.getTitle());
+        holder.tourLocation.setText(tour.getLocation());
+        holder.tourRating.setText(String.valueOf(tour.getRating()));
+
+        Picasso.get().load(tour.getImageUrl()).into(holder.imageTour);
+
+        ViewGroup.LayoutParams layoutParams = holder.itemView.getLayoutParams();
+        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        holder.itemView.setLayoutParams(layoutParams);
     }
+
 
     @Override
     public int getItemCount() {
         return tourList.size();
     }
 
-    public static class TourViewHolder extends RecyclerView.ViewHolder {
-        ImageView image;
-        TextView title, price;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView imageTour;
+        TextView tourTitle, tourLocation, tourRating;
 
-        public TourViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            image = itemView.findViewById(R.id.imgTour);
-            title = itemView.findViewById(R.id.txtTourTitle);
-            price = itemView.findViewById(R.id.txtTourPrice);
+            imageTour = itemView.findViewById(R.id.imageTour);
+            tourTitle = itemView.findViewById(R.id.tourTitle);
+            tourLocation = itemView.findViewById(R.id.tourLocation);
+            tourRating = itemView.findViewById(R.id.tourRating);
         }
     }
 }

@@ -16,10 +16,12 @@
         android:textSize="22sp"
         android:textStyle="bold"
         android:textColor="@color/black"
+        android:fontFamily="@font/"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="20dp"
+        />
 
     <!-- Ô nhập Email -->
     <com.google.android.material.textfield.TextInputLayout
