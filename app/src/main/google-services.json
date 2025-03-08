@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "788962792629",
+    "firebase_url": "https://tour-nest-e1492-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "tour-nest-e1492",
     "storage_bucket": "tour-nest-e1492.firebasestorage.app"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.example.tour_nest"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "788962792629-lc069hntb5i9vhnga0qhh9tg07orllma.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tour_nest",
+            "certificate_hash": "430754d4bf2e3c5bf8ad82ccfde2347890b65ad5"
+          }
+        },
+        {
+          "client_id": "788962792629-bii37o8e1eiudd34e1qrldql1lc48fd3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyA-yqqdWo_LQs2FzEEumO_YZhs7QxTcU-0"
@@ -20,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "788962792629-bii37o8e1eiudd34e1qrldql1lc48fd3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

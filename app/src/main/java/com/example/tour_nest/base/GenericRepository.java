@@ -1,9 +1,13 @@
 package com.example.tour_nest.base;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.google.firebase.database.*;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +27,22 @@ public class GenericRepository<T> implements BaseRepository<T> {
 
     @Override
     public void update(String id, T data) {
-        databaseReference.child(id).setValue(data);
+        try {
+            T clonedData = (T) data.getClass().newInstance();
+
+            for (Field field : data.getClass().getDeclaredFields()) {
+                field.setAccessible(true);
+                if (!field.getName().equals("id")) {
+                    field.set(clonedData, field.get(data));
+                }
+            }
+
+            databaseReference.child(id).setValue(clonedData);
+        } catch (Exception e) {
+            Log.e("Firebase", "Error cloning data", e);
+        }
     }
+
 
     @Override
     public void delete(String id) {
@@ -74,7 +92,16 @@ public class GenericRepository<T> implements BaseRepository<T> {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<T> results = new ArrayList<>();
                 for (DataSnapshot data : snapshot.getChildren()) {
-                    results.add(data.getValue(modelClass));
+                    T item = data.getValue(modelClass);
+                    if (item != null) {
+                        try {
+                            Method setIdMethod = modelClass.getMethod("setId", String.class);
+                            setIdMethod.invoke(item, data.getKey());
+                        } catch (Exception e) {
+                            Log.e("Firebase", "Lỗi gán ID", e);
+                        }
+                        results.add(item);
+                    }
                 }
                 callback.onSuccess(results);
             }
@@ -85,4 +112,5 @@ public class GenericRepository<T> implements BaseRepository<T> {
             }
         });
     }
+
 }

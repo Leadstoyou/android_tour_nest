@@ -1,4 +1,4 @@
-package com.example.tour_nest.activity;
+package com.example.tour_nest.activity.auth;
 
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -17,11 +17,9 @@ public class ResetPasswordActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Initialize ViewBinding
         binding = ActivityResetPasswordBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Button Click Listener
         binding.btnResetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

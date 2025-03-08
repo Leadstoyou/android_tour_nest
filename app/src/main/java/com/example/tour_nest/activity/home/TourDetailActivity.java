@@ -1,4 +1,4 @@
-package com.example.tour_nest.activity;
+package com.example.tour_nest.activity.home;
 
 import android.os.Bundle;
 

@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <application
         android:name=".base.MyApplication"
         android:allowBackup="true"
@@ -13,35 +17,48 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TourNest"
         tools:targetApi="31">
+
+        <meta-data
+            android:name="com.google.firebase.auth.API_KEY"
+            android:value="@string/default_web_client_id" />
+
+        <!-- ✅ Cho phép Google Sign-In -->
+        <meta-data
+            android:name="com.google.android.gms.auth.api.signin.CLIENT_ID"
+            android:value="@string/default_web_client_id" />
+
         <activity
-            android:name=".activity.ProfileActivity"
+            android:name=".activity.profile.ProfileDetailsActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.TourListActivity"
+            android:name=".activity.profile.ProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.BookingActivity"
+            android:name=".activity.favourite.TourListActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.TourDetailActivity"
+            android:name=".activity.home.BookingActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.HomeActivity"
+            android:name=".activity.home.TourDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.ForgotPasswordActivity"
+            android:name=".activity.home.HomeActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.ResetPasswordActivity"
+            android:name=".activity.auth.ForgotPasswordActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.RegisterActivity"
+            android:name=".activity.auth.ResetPasswordActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.LoginActivity"
+            android:name=".activity.auth.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.auth.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

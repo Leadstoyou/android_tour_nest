@@ -5,6 +5,11 @@
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
+    <string name="setting_your_profile">Your Profile</string>
+    <string name="setting_payment_history">Payment History</string>
+    <string name="setting_my_booking">My Booking</string>
+    <string name="setting_log_out">Logout</string>
+
 
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
@@ -42,4 +47,5 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
+    <string name="default_web_client_id">788962792629-bii37o8e1eiudd34e1qrldql1lc48fd3.apps.googleusercontent.com</string>
 </resources>

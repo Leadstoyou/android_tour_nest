@@ -1,12 +1,8 @@
-package com.example.tour_nest.activity;
+package com.example.tour_nest.activity.home;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,12 +14,12 @@ import com.example.tour_nest.adapter.home.CategorySliderAdapter;
 import com.example.tour_nest.adapter.home.PlaceAdapter;
 import com.example.tour_nest.adapter.home.ServiceAdapter;
 import com.example.tour_nest.adapter.home.TourAdapter;
+import com.example.tour_nest.base.BaseActivity;
 import com.example.tour_nest.model.home.Category;
 import com.example.tour_nest.model.home.CategorySlider;
 import com.example.tour_nest.model.home.Place;
 import com.example.tour_nest.model.home.Service;
 import com.example.tour_nest.model.home.TourPackage;
-import com.example.tour_nest.util.LogUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
@@ -31,7 +27,7 @@ import com.google.android.material.button.MaterialButtonToggleGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeActivity extends AppCompatActivity implements CategoryAdapter.OnCategoryClickListener {
+public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCategoryClickListener {
     private RecyclerView categoryRecyclerView;
     private CategoryAdapter categoryAdapter;
     private List<Category> categoryList;
@@ -134,20 +130,7 @@ public class HomeActivity extends AppCompatActivity implements CategoryAdapter.O
         placeAdapter = new PlaceAdapter(this, placeList);
         placeRecyclerView.setAdapter(placeAdapter);
         //-------------------------------------------------------
-        bottomNavigationView = findViewById(R.id.bottomNavigation);
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-
-            if (itemId == R.id.nav_home) {
-                return true;
-            } else if (itemId == R.id.nav_favorite) {
-                return true;
-            } else if (itemId == R.id.nav_more) {
-                return true;
-            }
-
-            return false;
-        });
+        setupBottomNavigation(R.id.nav_home);
         //-------------------------------------------------------------------
         servicesRecyclerView = findViewById(R.id.servicesRecyclerView);
         servicesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
