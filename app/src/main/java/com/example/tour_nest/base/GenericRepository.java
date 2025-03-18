@@ -20,9 +20,25 @@ public class GenericRepository<T> implements BaseRepository<T> {
         this.modelClass = modelClass;
     }
 
+    public DatabaseReference getReference() {
+        return databaseReference;
+    }
+
     @Override
     public void create( T data) {
-        databaseReference.push().setValue(data);
+        String id = databaseReference.push().getKey();
+
+        if (id != null) {
+            try {
+                Method setIdMethod = modelClass.getMethod("setId", String.class);
+                setIdMethod.invoke(data, id); // ✅ Gán ID vào đối tượng
+            } catch (Exception e) {
+                Log.e("Firebase", "Lỗi gán ID khi tạo dữ liệu", e);
+            }
+            databaseReference.child(id).setValue(data); // ✅ Lưu vào Firebase
+        } else {
+            Log.e("Firebase", "Không thể tạo ID mới cho dữ liệu");
+        }
     }
 
     @Override
@@ -72,7 +88,16 @@ public class GenericRepository<T> implements BaseRepository<T> {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<T> dataList = new ArrayList<>();
                 for (DataSnapshot data : snapshot.getChildren()) {
-                    dataList.add(data.getValue(modelClass));
+                    T item = data.getValue(modelClass);
+                    if (item != null) {
+                        try {
+                            Method setIdMethod = modelClass.getMethod("setId", String.class);
+                            setIdMethod.invoke(item, data.getKey());
+                        } catch (Exception e) {
+                            Log.e("Firebase", "Lỗi gán ID", e);
+                        }
+                        dataList.add(item);
+                    }
                 }
                 callback.onSuccess(dataList);
             }
@@ -85,7 +110,15 @@ public class GenericRepository<T> implements BaseRepository<T> {
     }
     @Override
     public void search(String field, String value, FirebaseCallback<List<T>> callback) {
-        Query query = databaseReference.orderByChild(field).equalTo(value);
+        String searchValue = value.toLowerCase();
+
+
+        String endValue = searchValue + "\uf8ff";
+
+        // Tạo truy vấn với orderByChild, startAt và endAt
+        Query query = databaseReference.orderByChild(field)
+                .startAt(searchValue)
+                .endAt(endValue);
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

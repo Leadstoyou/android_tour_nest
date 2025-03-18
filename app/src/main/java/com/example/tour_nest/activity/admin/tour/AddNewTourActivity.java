@@ -1,0 +1,309 @@
+package com.example.tour_nest.activity.admin.tour;
+
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import android.app.AlertDialog;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.tour_nest.R;
+import com.example.tour_nest.activity.admin.user.AdminManageUserActivity;
+import com.example.tour_nest.adapter.admin.GalleryAdapter;
+import com.example.tour_nest.base.BaseActivity;
+import com.example.tour_nest.base.FirebaseCallback;
+import com.example.tour_nest.model.Category;
+import com.example.tour_nest.model.Tour;
+import com.example.tour_nest.service.CategoryService;
+import com.example.tour_nest.service.CloudinaryService;
+import com.example.tour_nest.service.TourService;
+import com.example.tour_nest.util.Common;
+import com.example.tour_nest.util.Constant;
+import com.example.tour_nest.util.LoadingUtil;
+import com.example.tour_nest.util.LogUtil;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
+public class AddNewTourActivity extends BaseActivity {
+    private static final int PICK_THUMBNAIL_REQUEST = 1;
+    private static final int PICK_IMAGES_REQUEST = 2;
+
+    private List<Uri> imageUris = new ArrayList<>();
+    private GalleryAdapter galleryAdapter;
+    private ImageView thumbnailImageView;
+    private Uri thumbnailUri;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private Spinner regionSpinner;
+    private Spinner categorySpinner;
+    private List<Category> categoryList = new ArrayList<>();
+
+    private AlertDialog loadingDialog;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_add_new_tour);
+
+        thumbnailImageView = findViewById(R.id.thumbnailImageView);
+        Button selectThumbnailButton = findViewById(R.id.selectThumbnailButton);
+        Button selectGalleryButton = findViewById(R.id.selectGalleryButton);
+        RecyclerView galleryRecyclerView = findViewById(R.id.galleryRecyclerView);
+        Button submitButton = findViewById(R.id.submitButton);
+        regionSpinner = findViewById(R.id.regionSpinner);
+        categorySpinner = findViewById(R.id.categorySpinner);
+
+        List<String> regionList = Arrays.asList(
+                Constant.NORTH_REGION,
+                Constant.CENTRAL_REGION,
+                Constant.SOUTH_REGION
+        );
+        ArrayAdapter<String> regionAdapter = new ArrayAdapter<>(
+                this, android.R.layout.simple_spinner_item, regionList
+        );
+        regionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        regionSpinner.setAdapter(regionAdapter);
+
+        galleryRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        galleryAdapter = new GalleryAdapter(imageUris, position -> {
+            imageUris.remove(position);
+            galleryAdapter.notifyItemRemoved(position);
+        });
+        galleryRecyclerView.setAdapter(galleryAdapter);
+
+        selectThumbnailButton.setOnClickListener(v -> openImagePicker(PICK_THUMBNAIL_REQUEST));
+        selectGalleryButton.setOnClickListener(v -> openImagePicker(PICK_IMAGES_REQUEST));
+
+
+        setupDynamicFields();
+
+
+        loadCategories();
+
+        submitButton.setOnClickListener(v -> submitTourData());
+    }
+
+    private void openImagePicker(int requestCode) {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        if (requestCode == PICK_IMAGES_REQUEST) {
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        }
+        startActivityForResult(intent, requestCode);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && data != null) {
+            if (requestCode == PICK_THUMBNAIL_REQUEST) {
+                thumbnailUri = data.getData();
+                if (thumbnailUri != null) {
+                    thumbnailImageView.setImageURI(thumbnailUri);
+                }
+            } else if (requestCode == PICK_IMAGES_REQUEST) {
+                if (data.getClipData() != null) {
+                    int count = data.getClipData().getItemCount();
+                    for (int i = 0; i < count; i++) {
+                        Uri imageUri = data.getClipData().getItemAt(i).getUri();
+                        imageUris.add(imageUri);
+                    }
+                } else if (data.getData() != null) {
+                    imageUris.add(data.getData());
+                }
+                galleryAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+
+    private void setupDynamicFields() {
+        findViewById(R.id.addPlaceButton).setOnClickListener(v -> addInputField(R.id.placesContainer, "Nhập địa điểm"));
+        findViewById(R.id.addIncludedButton).setOnClickListener(v -> addInputField(R.id.includedContainer, "Nhập dịch vụ bao gồm"));
+        findViewById(R.id.addExcludedButton).setOnClickListener(v -> addInputField(R.id.excludedContainer, "Nhập dịch vụ không bao gồm"));
+        findViewById(R.id.addCancellationPolicyButton).setOnClickListener(v -> addInputField(R.id.cancellationPolicyContainer, "Nhập chính sách hủy tour"));
+        findViewById(R.id.addChildPolicyButton).setOnClickListener(v -> addInputField(R.id.childPolicyContainer, "Nhập chính sách trẻ em"));
+    }
+
+    private void addInputField(int containerId, String hint) {
+        LinearLayout container = findViewById(containerId);
+        LinearLayout inputLayout = new LinearLayout(this);
+        inputLayout.setOrientation(LinearLayout.HORIZONTAL);
+        inputLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
+
+        EditText editText = new EditText(this);
+        editText.setLayoutParams(new LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1
+        ));
+        editText.setHint(hint);
+
+        Button removeButton = new Button(this);
+        removeButton.setText("-");
+        removeButton.setOnClickListener(v -> container.removeView(inputLayout));
+
+        inputLayout.addView(editText);
+        inputLayout.addView(removeButton);
+        container.addView(inputLayout);
+    }
+
+    private void loadCategories() {
+        CategoryService.getAll().onResult(new FirebaseCallback<List<Category>>() {
+            @Override
+            public void onSuccess(List<Category> result) {
+                LogUtil.logMessage("result::" + result.toString());
+                categoryList.clear();
+                categoryList.addAll(result);
+                ArrayAdapter<Category> categoryAdapter = new ArrayAdapter<>(AddNewTourActivity.this,
+                        android.R.layout.simple_spinner_item, categoryList);
+                categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                categorySpinner.setAdapter(categoryAdapter);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("FirebaseError", "Lỗi khi lấy danh mục: " + e.getMessage());
+                Toast.makeText(AddNewTourActivity.this, "Không thể tải danh mục tour", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @SuppressLint("CheckResult")
+    private void submitTourData() {
+        String name = ((EditText) findViewById(R.id.nameEditText)).getText().toString().trim();
+        String description = ((EditText) findViewById(R.id.descriptionEditText)).getText().toString().trim();
+        String priceStr = ((EditText) findViewById(R.id.priceEditText)).getText().toString().trim();
+        String daysStr = ((EditText) findViewById(R.id.daysEditText)).getText().toString().trim();
+        String nightsStr = ((EditText) findViewById(R.id.nightsEditText)).getText().toString().trim();
+        String departure = ((EditText) findViewById(R.id.departureEditText)).getText().toString().trim();
+        String destination = ((EditText) findViewById(R.id.destinationEditText)).getText().toString().trim();
+        String transportation = ((EditText) findViewById(R.id.transportationEditText)).getText().toString().trim();
+        String region = regionSpinner.getSelectedItem().toString();
+        String slotStr = ((EditText) findViewById(R.id.slotEditText)).getText().toString().trim();
+        Category selectedCategory = (Category) categorySpinner.getSelectedItem();
+        String categoryId = selectedCategory != null ? selectedCategory.getId() : null;
+
+        List<String> placesToVisit = getInputData(findViewById(R.id.placesContainer));
+        List<String> includedServices = getInputData(findViewById(R.id.includedContainer));
+        List<String> excludedServices = getInputData(findViewById(R.id.excludedContainer));
+        List<String> cancellationPolicy = getInputData(findViewById(R.id.cancellationPolicyContainer));
+        List<String> childPolicy = getInputData(findViewById(R.id.childPolicyContainer));
+
+        // Kiểm tra dữ liệu đầu vào
+        if (name.isEmpty() || description.isEmpty() || priceStr.isEmpty() || daysStr.isEmpty() || nightsStr.isEmpty()
+                || departure.isEmpty() || destination.isEmpty() || transportation.isEmpty() || region.isEmpty()
+                || slotStr.isEmpty() || categoryId == null || placesToVisit.isEmpty() || includedServices.isEmpty()
+                || excludedServices.isEmpty() || cancellationPolicy.isEmpty() || childPolicy.isEmpty()
+                || thumbnailUri == null || imageUris.isEmpty()) {
+            Toast.makeText(this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Chuyển đổi dữ liệu số
+        double price;
+        int days, nights, slot;
+        try {
+            price = Double.parseDouble(priceStr);
+            days = Integer.parseInt(daysStr);
+            nights = Integer.parseInt(nightsStr);
+            slot = Integer.parseInt(slotStr);
+            if (slot <= 0) {
+                Toast.makeText(this, "Số lượng chỗ phải lớn hơn 0", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Giá tiền, số ngày, số đêm, số lượng chỗ phải là số hợp lệ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        CloudinaryService cloudinaryService = new CloudinaryService();
+
+        Single<String> thumbnailUpload = Single.fromCallable(() -> cloudinaryService.uploadImageSync(this, thumbnailUri));
+        List<Single<String>> galleryUploads = imageUris.stream()
+                .map(uri -> Single.fromCallable(() -> cloudinaryService.uploadImageSync(this, uri)))
+                .collect(Collectors.toList());
+
+        LoadingUtil.showLoading(this);
+
+        Disposable disposable = Single.zip(
+                        thumbnailUpload,
+                        Single.zip(galleryUploads, urls -> {
+                            List<String> galleryUrlList = new ArrayList<>();
+                            for (Object obj : urls) {
+                                galleryUrlList.add(obj.toString());
+                            }
+                            return galleryUrlList;
+                        }),
+                        (thumbnailUrl, galleryUrls) -> {
+                            Tour newTour = new Tour(name, description, thumbnailUrl, galleryUrls, placesToVisit,
+                                    includedServices, excludedServices, cancellationPolicy, childPolicy,
+                                    price, days, nights, departure, destination, transportation, region, slot, categoryId);
+                            TourService.create(newTour);
+                            return true;
+                        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        success -> {
+                            if (!isFinishing() && !isDestroyed()) {
+                                LoadingUtil.hideLoading(AddNewTourActivity.this);
+                                Log.d("CloudinaryUpload", "Upload hoàn tất!");
+                                setResult(RESULT_OK);
+                                finish();
+                            }
+                        },
+                        error -> {
+                            if (!isFinishing() && !isDestroyed()) {
+                                LoadingUtil.hideLoading(AddNewTourActivity.this);
+                                Log.e("CloudinaryUpload", "Lỗi upload: " + error.getMessage());
+                                Toast.makeText(this, "Lỗi upload ảnh: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                );
+
+        compositeDisposable.add(disposable);
+    }
+
+    private List<String> getInputData(LinearLayout container) {
+        List<String> data = new ArrayList<>();
+        for (int i = 0; i < container.getChildCount(); i++) {
+            LinearLayout inputLayout = (LinearLayout) container.getChildAt(i);
+            EditText editText = (EditText) inputLayout.getChildAt(0);
+            String input = editText.getText().toString().trim();
+            if (!input.isEmpty()) {
+                data.add(input);
+            }
+        }
+        return data;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (!compositeDisposable.isDisposed()) {
+            compositeDisposable.dispose();
+        }
+    }
+}

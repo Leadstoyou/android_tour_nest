@@ -1,6 +1,7 @@
 package com.example.tour_nest.adapter.home;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.tour_nest.R;
+import com.example.tour_nest.activity.home.TourDetailActivity;
 import com.example.tour_nest.model.home.Place;
 import com.squareup.picasso.Picasso;
 import java.util.List;
@@ -35,8 +37,8 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
         Place place = placeList.get(position);
         holder.placeName.setText(place.getName());
         Picasso.get().load(place.getImageUrl()).into(holder.placeImage);
+        holder.tourId = place.getTourId();
 
-        // Xử lý đánh giá sao
         for (int i = 0; i < 5; i++) {
             ImageView star = (ImageView) holder.ratingLayout.getChildAt(i);
             if (i < Math.floor(place.getRating())) {
@@ -54,13 +56,22 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
         ImageView placeImage, bookmarkIcon;
         TextView placeName;
         LinearLayout ratingLayout;
-
+        String tourId;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             placeImage = itemView.findViewById(R.id.placeImage);
             bookmarkIcon = itemView.findViewById(R.id.bookmarkIcon);
             placeName = itemView.findViewById(R.id.placeName);
             ratingLayout = itemView.findViewById(R.id.ratingLayout);
+            itemView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    Context context = v.getContext();
+                    Intent intent = new Intent(context, TourDetailActivity.class);
+                    intent.putExtra("tour_id", tourId);
+                    context.startActivity(intent);
+                }
+            });
         }
     }
 }

@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:name=".base.MyApplication"
         android:allowBackup="true"
@@ -17,12 +20,31 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TourNest"
         tools:targetApi="31">
+        <activity
+            android:name=".activity.admin.user.AdminManageUserActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.admin.category.EditCategoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.admin.category.AddCategoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.admin.category.AdminManageCategoriesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.admin.AdminDashboardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.admin.tour.AdminTourListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.admin.tour.AddNewTourActivity"
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.firebase.auth.API_KEY"
-            android:value="@string/default_web_client_id" />
-
-        <!-- ✅ Cho phép Google Sign-In -->
+            android:value="@string/default_web_client_id" /> <!-- ✅ Cho phép Google Sign-In -->
         <meta-data
             android:name="com.google.android.gms.auth.api.signin.CLIENT_ID"
             android:value="@string/default_web_client_id" />

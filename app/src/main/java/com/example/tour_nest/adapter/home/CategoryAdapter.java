@@ -32,6 +32,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_item, parent, false);
+        categoryList.forEach(category -> {
+            if(category.isSelected()) selectedPosition = categoryList.indexOf(category);
+        });
         return new ViewHolder(view);
     }
 

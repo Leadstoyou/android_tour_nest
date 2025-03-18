@@ -12,6 +12,9 @@ public class User implements Serializable {
     private String password;
     private String userImage;
     private String createdAt;
+    private int role;
+
+    private int status;
     public User(){}
 
     public User(String email, String password) {
@@ -26,6 +29,45 @@ public class User implements Serializable {
         this.password = password;
         this.userImage = userImage;
         this.createdAt = createdAt;
+    }
+
+    public User(String id, String fullName, String email, String phone, String password, String userImage, String createdAt, int role) {
+        this.id = id;
+        this.fullName = fullName;
+        this.email = email;
+        this.phone = phone;
+        this.password = password;
+        this.userImage = userImage;
+        this.createdAt = createdAt;
+        this.role = role;
+    }
+
+    public User(String id, String fullName, String email, String phone, String password, String userImage, String createdAt, int role, int status) {
+        this.id = id;
+        this.fullName = fullName;
+        this.email = email;
+        this.phone = phone;
+        this.password = password;
+        this.userImage = userImage;
+        this.createdAt = createdAt;
+        this.role = role;
+        this.status = status;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public int getRole() {
+        return role;
+    }
+
+    public void setRole(int role) {
+        this.role = role;
     }
 
     public String getId() {

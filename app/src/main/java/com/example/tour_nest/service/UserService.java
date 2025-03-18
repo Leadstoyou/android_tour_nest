@@ -2,6 +2,7 @@ package com.example.tour_nest.service;
 
 import com.example.tour_nest.base.FirebaseCallback;
 import com.example.tour_nest.base.GenericRepository;
+import com.example.tour_nest.constant.Constant;
 import com.example.tour_nest.model.User;
 import com.example.tour_nest.util.Common;
 import com.example.tour_nest.util.EmailSender;
@@ -17,7 +18,6 @@ public class UserService<T> {
 
     public UserService() {
     }
-
 
     public void onResult(FirebaseCallback<T> callback) {
         this.callback = callback;
@@ -52,6 +52,7 @@ public class UserService<T> {
                 if (result.isEmpty()) {
                     User newUser = new User(firebaseUser.getDisplayName(), firebaseUser.getEmail(), firebaseUser.getPhoneNumber(),
                             "123", Objects.requireNonNull(firebaseUser.getPhotoUrl()).toString(), Common.getCurrentDateByMillis());
+                    newUser.setRole(Constant.USER_ROLE);
                     userRepository.create(newUser);
                     service.callback.onSuccess(newUser);
                 } else {
@@ -129,6 +130,21 @@ public class UserService<T> {
         });
         return service;
     }
+    public static UserService<User> update(String id, User user) {
+        UserService<User> service = new UserService<>();
+        if (id == null || id.isEmpty() || user == null) {
+            if (service.callback != null) {
+                service.callback.onFailure(new Exception("Dữ liệu người dùng không hợp lệ"));
+            }
+            return service;
+        }
 
+        user.setId(id);
+        userRepository.update(id, user);
+        if (service.callback != null) {
+            service.callback.onSuccess(user);
+        }
+        return service;
+    }
 
 }

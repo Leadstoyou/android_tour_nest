@@ -5,9 +5,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.tour_nest.activity.admin.AdminDashboardActivity;
+import com.example.tour_nest.activity.admin.tour.AddNewTourActivity;
 import com.example.tour_nest.activity.home.HomeActivity;
 import com.example.tour_nest.base.BaseActivity;
 import com.example.tour_nest.base.FirebaseCallback;
+import com.example.tour_nest.constant.Constant;
 import com.example.tour_nest.databinding.ActivityLoginBinding;
 import com.example.tour_nest.model.User;
 import com.example.tour_nest.service.UserService;
@@ -38,7 +41,11 @@ public class LoginActivity extends BaseActivity {
                 if(binding.chkRememberMe.isChecked()){
                     SharedPrefHelper.saveUser(getBaseContext(), result);
                 }
-                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                Class<?> targetActivity = (result.getRole() == Constant.USER_ROLE)
+                        ? HomeActivity.class
+                        : AdminDashboardActivity.class;
+
+                Intent intent = new Intent(LoginActivity.this, targetActivity);
                 startActivity(intent);
                 finish();
             } else {

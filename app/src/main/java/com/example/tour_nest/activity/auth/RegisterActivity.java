@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import com.example.tour_nest.base.BaseActivity;
 import com.example.tour_nest.base.FirebaseCallback;
+import com.example.tour_nest.constant.Constant;
 import com.example.tour_nest.databinding.ActivityRegisterBinding;
 import com.example.tour_nest.model.User;
 import com.example.tour_nest.service.UserService;
@@ -53,6 +54,8 @@ public class RegisterActivity extends BaseActivity {
             return;
         }
         User user = new User(fullName, email, phone, password, "", Common.getCurrentDateByMillis());
+        user.setRole(Constant.USER_ROLE);
+        user.setStatus(0);
         UserService
                 .register(user)
                 .onResult(new FirebaseCallback<Boolean>() {

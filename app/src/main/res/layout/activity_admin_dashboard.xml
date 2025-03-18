@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    android:padding="16dp"
+    android:background="@color/material_dynamic_neutral90">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bảng Điều Khiển Quản Trị"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="24dp" />
+
+    <Button
+        android:id="@+id/btnManageCategories"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="F01: Quản lý danh mục tour"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/material_dynamic_primary50"
+        android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/btnManageTours"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="F02: Quản lý tour"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/material_dynamic_primary50"
+        android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/btnManageBookings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="F03: Quản lý đơn đặt tour"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/material_dynamic_primary50"
+        android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/btnManageUsers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="F04: Quản lý người dùng"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/material_dynamic_primary50"
+        android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/btnReportsAnalytics"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="F05: Báo cáo và phân tích dữ liệu"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/material_dynamic_primary50"
+        android:textColor="@color/white" />
+    <Button
+        android:id="@+id/btnAdminLogout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Logout"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/material_dynamic_primary50"
+        android:textColor="@color/white" />
+</LinearLayout>

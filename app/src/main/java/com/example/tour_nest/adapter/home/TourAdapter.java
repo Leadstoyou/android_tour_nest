@@ -1,17 +1,21 @@
 package com.example.tour_nest.adapter.home;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tour_nest.R;
+import com.example.tour_nest.activity.home.TourDetailActivity;
 import com.example.tour_nest.model.home.TourPackage;
 import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 public class TourAdapter extends RecyclerView.Adapter<TourAdapter.ViewHolder> {
@@ -36,7 +40,7 @@ public class TourAdapter extends RecyclerView.Adapter<TourAdapter.ViewHolder> {
         holder.tourTitle.setText(tour.getTitle());
         holder.tourLocation.setText(tour.getLocation());
         holder.tourRating.setText(String.valueOf(tour.getRating()));
-
+        holder.tourId = tour.getId();
         Picasso.get().load(tour.getImageUrl()).into(holder.imageTour);
 
         ViewGroup.LayoutParams layoutParams = holder.itemView.getLayoutParams();
@@ -53,6 +57,7 @@ public class TourAdapter extends RecyclerView.Adapter<TourAdapter.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageTour;
         TextView tourTitle, tourLocation, tourRating;
+        String tourId;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -60,6 +65,17 @@ public class TourAdapter extends RecyclerView.Adapter<TourAdapter.ViewHolder> {
             tourTitle = itemView.findViewById(R.id.tourTitle);
             tourLocation = itemView.findViewById(R.id.tourLocation);
             tourRating = itemView.findViewById(R.id.tourRating);
+
+            itemView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    Context context = v.getContext();
+                    Intent intent = new Intent(context, TourDetailActivity.class);
+                    intent.putExtra("tour_id", tourId);
+                    context.startActivity(intent);
+                }
+            });
         }
+
     }
 }

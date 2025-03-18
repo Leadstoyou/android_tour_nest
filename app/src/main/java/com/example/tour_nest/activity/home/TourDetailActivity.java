@@ -1,6 +1,8 @@
 package com.example.tour_nest.activity.home;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -10,8 +12,11 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.tour_nest.R;
 import com.example.tour_nest.adapter.tour.PhotoGalleryAdapter;
 import com.example.tour_nest.base.BaseActivity;
+import com.example.tour_nest.base.FirebaseCallback;
 import com.example.tour_nest.databinding.ActivityTourDetailBinding;
+import com.example.tour_nest.model.Tour;
 import com.example.tour_nest.model.tour.Photo;
+import com.example.tour_nest.service.TourService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,33 +27,54 @@ public class TourDetailActivity extends BaseActivity {
     private PhotoGalleryAdapter adapter;
     private List<Photo> photoList;
     private ActivityTourDetailBinding binding;
+    private String tourId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityTourDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        tourId = getIntent().getStringExtra("tour_id");
+        if (tourId == null) {
+            startActivity(new Intent(this, HomeActivity.class));
+        }
+        loadData();
+    }
 
-        Glide.with(this)
-                .load("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtGXVtvF1dpvRTfBKnJwvXnvK-nAcGOqch3w&s") // Use drawable resource OR a URL
-                .override(1080, 600)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(binding.backgroundImage);
+    private void loadData() {
+        TourService.getById(tourId).onResult(new FirebaseCallback<Tour>() {
+            @Override
+            public void onSuccess(Tour result) {
 
-        //-------------------------------------------------------------------
-        recyclerView = findViewById(R.id.recyclerViewGallery);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setNestedScrollingEnabled(false); // Prevent scroll conflict
-        // Sample images from the internet (Replace with your own URLs)
-        photoList = new ArrayList<>();
-        photoList.add(new Photo("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTt3ypdKlgfJP8tiw1aaI3qV8QcdzV0Lk8JXQ&s"));
-        photoList.add(new Photo("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTt3ypdKlgfJP8tiw1aaI3qV8QcdzV0Lk8JXQ&s"));
-        photoList.add(new Photo("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTt3ypdKlgfJP8tiw1aaI3qV8QcdzV0Lk8JXQ&s"));
-        photoList.add(new Photo("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTt3ypdKlgfJP8tiw1aaI3qV8QcdzV0Lk8JXQ&s"));
-        photoList.add(new Photo("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTt3ypdKlgfJP8tiw1aaI3qV8QcdzV0Lk8JXQ&s"));
-        adapter = new PhotoGalleryAdapter(this, photoList);
-        recyclerView.setAdapter(adapter);
-        setRecyclerViewHeight();
+                binding.tourTitle.setText(result.getName());
+                binding.tourCountry.setText(result.getRegion());
+                binding.tourPrice.setText(String.valueOf(result.getPrice()));
+                binding.tourDescription.setText(result.getDescription());
+
+                Glide.with(TourDetailActivity.this)
+                        .load(result.getThumbnail())
+                        .override(1080, 600)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(binding.backgroundImage);
+
+                recyclerView = findViewById(R.id.recyclerViewGallery);
+                recyclerView.setLayoutManager(new GridLayoutManager(TourDetailActivity.this, 3));
+                recyclerView.setHasFixedSize(true);
+                recyclerView.setNestedScrollingEnabled(false);
+                photoList = new ArrayList<>();
+                result.getGallery().forEach(img -> {
+                    photoList.add(new Photo(img));
+                });
+                adapter = new PhotoGalleryAdapter(TourDetailActivity.this, photoList);
+                recyclerView.setAdapter(adapter);
+                setRecyclerViewHeight();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(TourDetailActivity.this, "Loi goi firebase", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
@@ -59,7 +85,6 @@ public class TourDetailActivity extends BaseActivity {
                 int itemHeight = 100; // Height of each imageView in dp
                 int totalHeight = rowCount * itemHeight; // Calculate total height
 
-                // Convert dp to pixels
                 float density = getResources().getDisplayMetrics().density;
                 int totalHeightPx = (int) (totalHeight * density);
 

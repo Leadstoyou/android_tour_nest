@@ -26,6 +26,7 @@ public class BaseActivity extends AppCompatActivity {
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR |
                         WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
     }
     protected void setupBottomNavigation(@IdRes int selectedItemId) {
         bottomNavigationView = findViewById(com.example.tour_nest.R.id.bottomNavigation);
