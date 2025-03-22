@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.tour_nest.R;
+import com.example.tour_nest.activity.auth.LoginActivity;
 import com.example.tour_nest.activity.favourite.TourListActivity;
 import com.example.tour_nest.adapter.home.CategoryAdapter;
 import com.example.tour_nest.adapter.home.CategorySliderAdapter;
@@ -25,6 +26,7 @@ import com.example.tour_nest.adapter.home.ServiceAdapter;
 import com.example.tour_nest.adapter.home.TourAdapter;
 import com.example.tour_nest.base.BaseActivity;
 import com.example.tour_nest.base.FirebaseCallback;
+import com.example.tour_nest.model.Favourite;
 import com.example.tour_nest.model.Tour;
 import com.example.tour_nest.model.User;
 import com.example.tour_nest.model.home.Category;
@@ -33,6 +35,7 @@ import com.example.tour_nest.model.home.Place;
 import com.example.tour_nest.model.home.Service;
 import com.example.tour_nest.model.home.TourPackage;
 import com.example.tour_nest.service.CategoryService;
+import com.example.tour_nest.service.FavouriteService;
 import com.example.tour_nest.service.TourService;
 import com.example.tour_nest.util.Constant;
 import com.example.tour_nest.util.LoadingUtil;
@@ -69,7 +72,8 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
 
     private List<Tour> listTour = new ArrayList<>();
     private EditText searchInput;
-
+    private Favourite userFavourite = new Favourite();
+    private User myUser = new User();
     @SuppressLint("UseCompatLoadingForColorStateLists")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,8 +87,25 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
         searchInput = findViewById(R.id.search_input);
         searchInput.setOnEditorActionListener(handleSearch());
         loadAllTour();
-
         setupBottomNavigation(R.id.nav_home);
+    }
+
+    private void loadFavourite() {
+        FavouriteService.getFavouriteByIdRealtime(myUser.getId(), new FirebaseCallback<Favourite>() {
+            @Override
+            public void onSuccess(Favourite result) {
+                if (result != null) {
+                    Log.d("Realtime", "Danh sách yêu thích: " + result.getFavouriteTours());
+                } else {
+                    Log.d("Realtime", "Không có danh sách yêu thích cho user này");
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+        });
     }
 
     private TextView.OnEditorActionListener handleSearch() {
@@ -112,33 +133,40 @@ public class HomeActivity extends BaseActivity implements CategoryAdapter.OnCate
     }
 
     private void loadAllTour() {
-        LoadingUtil.showLoading(HomeActivity.this);
-        TourService.getAllTour().onResult(new FirebaseCallback<List<Tour>>() {
-            @Override
-            public void onSuccess(List<Tour> result) {
-                listTour.addAll(result);
-                loadUserData();
-                loadPackage();
-                loadCategory();
-                loadRecommendType();
-                loadAppSpecial();
-                LoadingUtil.hideLoading(HomeActivity.this);
-            }
+        if(loadUserData()){
+            LoadingUtil.showLoading(HomeActivity.this);
+            TourService.getAllTour().onResult(new FirebaseCallback<List<Tour>>() {
+                @Override
+                public void onSuccess(List<Tour> result) {
+                    listTour.addAll(result);
+                    loadFavourite();
+                    loadPackage();
+                    loadCategory();
+                    loadRecommendType();
+                    loadAppSpecial();
+                    LoadingUtil.hideLoading(HomeActivity.this);
+                }
 
-            @Override
-            public void onFailure(Exception e) {
-                LoadingUtil.hideLoading(HomeActivity.this);
-                Toast.makeText(HomeActivity.this, "Lỗi tải danh sách tour: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void loadUserData() {
-        User user = SharedPrefHelper.getUser(getBaseContext());
-        if (user != null) {
-            ((TextView) findViewById(R.id.home_user_name)).setText(user.getFullName());
+                @Override
+                public void onFailure(Exception e) {
+                    LoadingUtil.hideLoading(HomeActivity.this);
+                    Toast.makeText(HomeActivity.this, "Lỗi tải danh sách tour: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            startActivity(new Intent(HomeActivity.this, LoginActivity.class));
         }
     }
+
+    private boolean loadUserData() {
+        myUser = SharedPrefHelper.getUser(getBaseContext());
+        if (myUser != null) {
+            ((TextView) findViewById(R.id.home_user_name)).setText(myUser.getFullName());
+            return true;
+        }
+        return false;
+    }
+
 
     private void loadAppSpecial() {
         servicesRecyclerView = findViewById(R.id.servicesRecyclerView);

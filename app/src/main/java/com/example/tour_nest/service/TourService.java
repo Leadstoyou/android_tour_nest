@@ -2,6 +2,7 @@ package com.example.tour_nest.service;
 
 import com.example.tour_nest.base.FirebaseCallback;
 import com.example.tour_nest.base.GenericRepository;
+import com.example.tour_nest.model.Favourite;
 import com.example.tour_nest.model.Tour;
 
 import java.util.List;
@@ -12,7 +13,9 @@ public class TourService<T> {
 
     public TourService() {
     }
-
+    public static GenericRepository<Tour> getRef(){
+        return tourRepository;
+    }
     public void onResult(FirebaseCallback<T> callback) {
         this.callback = callback;
     }

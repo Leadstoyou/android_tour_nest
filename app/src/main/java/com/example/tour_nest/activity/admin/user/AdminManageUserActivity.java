@@ -7,7 +7,6 @@ import android.text.TextWatcher;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,7 +30,6 @@ public class AdminManageUserActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_admin_manage_user);
 
         EditText searchUserEditText = findViewById(R.id.searchUserEditText);
@@ -62,10 +60,10 @@ public class AdminManageUserActivity extends BaseActivity {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onSuccess(List<User> result) {
-                LogUtil.logMessage("loadUsers :: Tải dữ liệu thành công");
                 if (!isFinishing() && !isDestroyed()) {
                     userList.clear();
                     userList.addAll(result);
+                    userAdapter.updateList(userList);
                     userAdapter.notifyDataSetChanged();
                 }
                 LoadingUtil.hideLoading(AdminManageUserActivity.this); // Ẩn ProgressBar
@@ -86,34 +84,21 @@ public class AdminManageUserActivity extends BaseActivity {
         int newStatus = user.getStatus() == 1 ? 0 : 1;
         user.setStatus(newStatus);
 
-        LoadingUtil.showLoading(this); // Hiển thị ProgressBar từ LoadingUtil
+        LoadingUtil.showLoading(this);
 
-        UserService.update(user.getId(), user).onResult(new FirebaseCallback<User>() {
-            @Override
-            public void onSuccess(User result) {
-                LogUtil.logMessage("toggleUserStatus :: Cập nhật thành công");
-                if (!isFinishing() && !isDestroyed()) {
-                    Toast.makeText(AdminManageUserActivity.this,
-                            newStatus == 1 ? "Mở tài khoản thành công" : "Khóa tài khoản thành công",
-                            Toast.LENGTH_SHORT).show();
-                    loadUsers();
-                } else {
-                    LoadingUtil.hideLoading(AdminManageUserActivity.this);
-                }
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                LogUtil.logMessage("toggleUserStatus :: Cập nhật thất bại - " + e.getMessage());
-                if (!isFinishing() && !isDestroyed()) {
-                    Toast.makeText(AdminManageUserActivity.this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-                LoadingUtil.hideLoading(AdminManageUserActivity.this);
-            }
-        });
+        UserService.update(user.getId(), user);
+        Toast.makeText(AdminManageUserActivity.this,
+                newStatus == 1 ? "Mở tài khoản thành công" : "Khóa tài khoản thành công",
+                Toast.LENGTH_SHORT).show();
+        loadUsers();
     }
 
     private void filterUsers(String query) {
+        if (query.isEmpty()) {
+            userAdapter.updateList(userList);
+            return;
+        }
+
         List<User> filteredList = new ArrayList<>();
         for (User user : userList) {
             if (user.getFullName().toLowerCase().contains(query.toLowerCase()) ||
@@ -123,6 +108,7 @@ public class AdminManageUserActivity extends BaseActivity {
         }
         userAdapter.updateList(filteredList);
     }
+
 
     @Override
     protected void onDestroy() {

@@ -5,6 +5,21 @@ import androidx.annotation.NonNull;
 import java.io.Serializable;
 
 public class User implements Serializable {
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", password='" + password + '\'' +
+                ", userImage='" + userImage + '\'' +
+                ", createdAt='" + createdAt + '\'' +
+                ", role=" + role +
+                ", status=" + status +
+                '}';
+    }
+
     private String id;
     private String fullName;
     private String email;
@@ -120,20 +135,6 @@ public class User implements Serializable {
 
     public String getCreatedAt() {
         return createdAt;
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
-        return "User{" +
-                "id='" + id + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", password='" + password + '\'' +
-                ", userImage='" + userImage + '\'' +
-                ", createdAt='" + createdAt + '\'' +
-                '}';
     }
 
     public void setCreatedAt(String createdAt) {

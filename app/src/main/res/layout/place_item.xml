@@ -29,7 +29,6 @@
             android:src="@drawable/ic_bookmark"
             app:tint="@color/white" />
 
-        <!-- Tên địa điểm -->
         <TextView
             android:id="@+id/placeName"
             android:layout_width="wrap_content"
@@ -39,7 +38,8 @@
             android:text="Saintmartin"
             android:textColor="@color/black"
             android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:maxLines="1" />
 
         <!-- Biểu tượng vị trí -->
         <ImageView

@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.tour_nest.R;
 import com.example.tour_nest.activity.admin.AdminDashboardActivity;
-import com.example.tour_nest.activity.admin.tour.AddNewTourActivity;
 import com.example.tour_nest.activity.home.HomeActivity;
 import com.example.tour_nest.base.BaseActivity;
 import com.example.tour_nest.base.FirebaseCallback;
@@ -14,6 +14,8 @@ import com.example.tour_nest.constant.Constant;
 import com.example.tour_nest.databinding.ActivityLoginBinding;
 import com.example.tour_nest.model.User;
 import com.example.tour_nest.service.UserService;
+import com.example.tour_nest.util.Common;
+import com.example.tour_nest.util.LoadingUtil;
 import com.example.tour_nest.util.SharedPrefHelper;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -25,7 +27,6 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.example.tour_nest.R;
 
 import java.util.Objects;
 
@@ -36,11 +37,16 @@ public class LoginActivity extends BaseActivity {
     private final FirebaseCallback<User> callbackResult = new FirebaseCallback<User>() {
         @Override
         public void onSuccess(User result) {
+            if (result != null && result.getStatus() == 0) {
+                LoadingUtil.hideLoading(LoginActivity.this);
+                Toast.makeText(LoginActivity.this, "Tài khoản bị khóa!", Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (result != null) {
                 Toast.makeText(getBaseContext(), "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-                if(binding.chkRememberMe.isChecked()){
-                    SharedPrefHelper.saveUser(getBaseContext(), result);
-                }
+                SharedPrefHelper.saveUser(getBaseContext(), result);
+
+                LoadingUtil.hideLoading(LoginActivity.this);
                 Class<?> targetActivity = (result.getRole() == Constant.USER_ROLE)
                         ? HomeActivity.class
                         : AdminDashboardActivity.class;
@@ -49,13 +55,15 @@ public class LoginActivity extends BaseActivity {
                 startActivity(intent);
                 finish();
             } else {
-                Toast.makeText(getBaseContext(), "Tài khoản không tồn tại!", Toast.LENGTH_SHORT).show();
+                LoadingUtil.hideLoading(LoginActivity.this);
+                Toast.makeText(LoginActivity.this, "Tài khoản không tồn tại!", Toast.LENGTH_SHORT).show();
             }
         }
 
         @Override
         public void onFailure(Exception e) {
-            Toast.makeText(getBaseContext(), "Đăng nhập thất bại!", Toast.LENGTH_SHORT).show();
+            LoadingUtil.hideLoading(LoginActivity.this);
+            Toast.makeText(LoginActivity.this, "Đăng nhập thất bại!", Toast.LENGTH_SHORT).show();
             Log.e("LoginError", "Lỗi khi đăng nhập: ", e);
         }
     };
@@ -86,6 +94,7 @@ public class LoginActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_SIGN_IN) {
+            LoadingUtil.showLoading(LoginActivity.this);
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
@@ -93,17 +102,36 @@ public class LoginActivity extends BaseActivity {
                     firebaseAuthWithGoogle(account.getIdToken());
                 }
             } catch (ApiException e) {
+                LoadingUtil.hideLoading(LoginActivity.this);
                 Toast.makeText(this, "Google sign-in failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
     }
 
     private void handleLocalSignIn() {
-        String email = Objects.requireNonNull(binding.edtEmail.getText()).toString();
-        String password = Objects.requireNonNull(binding.edtPassword.getText()).toString();
-        UserService.login(new User(email, password))
-                .onResult(callbackResult);
+        String email = Objects.requireNonNull(binding.edtEmail.getText()).toString().trim();
+        String password = Objects.requireNonNull(binding.edtPassword.getText()).toString().trim();
+
+        // Validate email và password
+        if (email.isEmpty()) {
+            binding.layoutEmail.setError("Vui lòng nhập email");
+            return;
+        }
+        if (!Common.isValidEmail(email)) {
+            binding.layoutEmail.setError("Email không hợp lệ");
+            return;
+        }
+        if (password.isEmpty()) {
+            binding.layoutPassword.setError("Vui lòng nhập mật khẩu");
+            return;
+        }
+
+        // Hiển thị loading và gửi yêu cầu đăng nhập
+        LoadingUtil.showLoading(LoginActivity.this);
+        UserService.login(new User(email, password)).onResult(callbackResult);
     }
+
+
 
     private void signInWithGoogle() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -117,6 +145,11 @@ public class LoginActivity extends BaseActivity {
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LoadingUtil.removeLoading(LoginActivity.this);
+    }
 
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
@@ -125,9 +158,11 @@ public class LoginActivity extends BaseActivity {
                     if (task.isSuccessful()) {
                         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
                         if (firebaseUser != null) {
+                            binding.chkRememberMe.setChecked(true);
                             UserService.handleGoogleSignIn(firebaseUser).onResult(callbackResult);
                         }
                     } else {
+                        LoadingUtil.hideLoading(LoginActivity.this);
                         Toast.makeText(this, "Đăng nhập thất bại!", Toast.LENGTH_SHORT).show();
                     }
                 });

@@ -61,10 +61,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         return categoryList.size();
     }
 
-    // Cập nhật danh sách (dùng cho tìm kiếm hoặc refresh)
     public void updateList(List<Category> newList) {
-        categoryList.clear();
-        categoryList.addAll(newList);
+        this.categoryList = newList;
         notifyDataSetChanged();
     }
 

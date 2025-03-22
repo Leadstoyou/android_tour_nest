@@ -1,5 +1,6 @@
 package com.example.tour_nest.adapter.profile;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.tour_nest.R;
 import com.example.tour_nest.activity.MainActivity;
+import com.example.tour_nest.activity.profile.OrderListActivity;
 import com.example.tour_nest.activity.profile.ProfileDetailsActivity;
 import com.example.tour_nest.model.profile.SettingItem;
 import com.example.tour_nest.util.SharedPrefHelper;
@@ -57,6 +59,12 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.Settin
             } else if (item.getTitle().equals(context.getString(R.string.setting_log_out))) {
                 SharedPrefHelper.logout(context);
                 Intent intent = new Intent(context, MainActivity.class);
+                context.startActivity(intent);
+                if (context instanceof Activity) {
+                    ((Activity) context).finishAffinity(); // Đóng toàn bộ Activity trong stack hiện tại
+                }
+            } else if (item.getTitle().equals(context.getString(R.string.setting_my_booking))) {
+                Intent intent = new Intent(context, OrderListActivity.class);
                 context.startActivity(intent);
             }
         });

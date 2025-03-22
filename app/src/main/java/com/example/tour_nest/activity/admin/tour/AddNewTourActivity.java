@@ -1,17 +1,20 @@
 package com.example.tour_nest.activity.admin.tour;
 
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -34,9 +37,13 @@ import com.example.tour_nest.util.Constant;
 import com.example.tour_nest.util.LoadingUtil;
 import com.example.tour_nest.util.LogUtil;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -59,7 +66,7 @@ public class AddNewTourActivity extends BaseActivity {
     private List<Category> categoryList = new ArrayList<>();
 
     private AlertDialog loadingDialog;
-
+    private List<String> departureDates = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,7 +103,8 @@ public class AddNewTourActivity extends BaseActivity {
 
 
         setupDynamicFields();
-
+        LinearLayout departureDatesContainer = findViewById(R.id.departureDatesContainer);
+        updateDepartureDatesDisplay(departureDatesContainer);
 
         loadCategories();
 
@@ -104,12 +112,13 @@ public class AddNewTourActivity extends BaseActivity {
     }
 
     private void openImagePicker(int requestCode) {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        if (requestCode == PICK_IMAGES_REQUEST) {
-            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        }
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
         startActivityForResult(intent, requestCode);
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -141,8 +150,67 @@ public class AddNewTourActivity extends BaseActivity {
         findViewById(R.id.addExcludedButton).setOnClickListener(v -> addInputField(R.id.excludedContainer, "Nhập dịch vụ không bao gồm"));
         findViewById(R.id.addCancellationPolicyButton).setOnClickListener(v -> addInputField(R.id.cancellationPolicyContainer, "Nhập chính sách hủy tour"));
         findViewById(R.id.addChildPolicyButton).setOnClickListener(v -> addInputField(R.id.childPolicyContainer, "Nhập chính sách trẻ em"));
+        findViewById(R.id.addDepartureDateButton).setOnClickListener(v -> showDatePickerDialog());
+    }
+    private void showDatePickerDialog() {
+        Calendar calendar = Calendar.getInstance();
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                (view, year, month, dayOfMonth) -> {
+                    Calendar selectedDate = Calendar.getInstance();
+                    selectedDate.set(year, month, dayOfMonth);
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                    String formattedDate = sdf.format(selectedDate.getTime());
+
+                    if (!departureDates.contains(formattedDate)) {
+                        departureDates.add(formattedDate);
+                        LinearLayout departureDatesContainer = findViewById(R.id.departureDatesContainer);
+                        updateDepartureDatesDisplay(departureDatesContainer);
+                    } else {
+                        Toast.makeText(this, "Ngày này đã được chọn", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+        );
+        // Optional: Set minimum date to today
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+        datePickerDialog.show();
     }
 
+    private void updateDepartureDatesDisplay(LinearLayout container) {
+        container.removeAllViews();
+
+        for (String date : departureDates) {
+            LinearLayout dateLayout = new LinearLayout(this);
+            dateLayout.setOrientation(LinearLayout.HORIZONTAL);
+            dateLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            ));
+
+            TextView dateText = new TextView(this);
+            dateText.setLayoutParams(new LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1
+            ));
+            dateText.setText(date);
+            dateText.setPadding(0, 8, 0, 8);
+
+            Button removeButton = new Button(this);
+            removeButton.setText("-");
+            removeButton.setOnClickListener(v -> {
+                departureDates.remove(date);
+                updateDepartureDatesDisplay(container);
+            });
+
+            dateLayout.addView(dateText);
+            dateLayout.addView(removeButton);
+            container.addView(dateLayout);
+        }
+    }
     private void addInputField(int containerId, String hint) {
         LinearLayout container = findViewById(containerId);
         LinearLayout inputLayout = new LinearLayout(this);
@@ -210,18 +278,23 @@ public class AddNewTourActivity extends BaseActivity {
         List<String> excludedServices = getInputData(findViewById(R.id.excludedContainer));
         List<String> cancellationPolicy = getInputData(findViewById(R.id.cancellationPolicyContainer));
         List<String> childPolicy = getInputData(findViewById(R.id.childPolicyContainer));
-
         // Kiểm tra dữ liệu đầu vào
         if (name.isEmpty() || description.isEmpty() || priceStr.isEmpty() || daysStr.isEmpty() || nightsStr.isEmpty()
                 || departure.isEmpty() || destination.isEmpty() || transportation.isEmpty() || region.isEmpty()
                 || slotStr.isEmpty() || categoryId == null || placesToVisit.isEmpty() || includedServices.isEmpty()
                 || excludedServices.isEmpty() || cancellationPolicy.isEmpty() || childPolicy.isEmpty()
-                || thumbnailUri == null || imageUris.isEmpty()) {
+                || thumbnailUri == null || imageUris.isEmpty() || departureDates.isEmpty()) {
             Toast.makeText(this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Chuyển đổi dữ liệu số
+        for (String date : departureDates) {
+            if (!isValidDateFormat(date)) {
+                Toast.makeText(this, "Định dạng ngày khởi hành không hợp lệ (dd/MM/yyyy)",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
         double price;
         int days, nights, slot;
         try {
@@ -245,7 +318,7 @@ public class AddNewTourActivity extends BaseActivity {
                 .map(uri -> Single.fromCallable(() -> cloudinaryService.uploadImageSync(this, uri)))
                 .collect(Collectors.toList());
 
-        LoadingUtil.showLoading(this);
+        LoadingUtil.showLoading(AddNewTourActivity.this);
 
         Disposable disposable = Single.zip(
                         thumbnailUpload,
@@ -259,7 +332,9 @@ public class AddNewTourActivity extends BaseActivity {
                         (thumbnailUrl, galleryUrls) -> {
                             Tour newTour = new Tour(name, description, thumbnailUrl, galleryUrls, placesToVisit,
                                     includedServices, excludedServices, cancellationPolicy, childPolicy,
-                                    price, days, nights, departure, destination, transportation, region, slot, categoryId);
+                                    price, days, nights, departure, destination, transportation, region, slot, categoryId,departureDates);
+                           LogUtil.logMessage("newTour ::" + newTour);
+                           newTour.setDepartureDates(departureDates);
                             TourService.create(newTour);
                             return true;
                         })
@@ -286,12 +361,30 @@ public class AddNewTourActivity extends BaseActivity {
         compositeDisposable.add(disposable);
     }
 
+
+    private boolean isValidDateFormat(String date) {
+        try {
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            sdf.setLenient(false);
+            sdf.parse(date);
+            return true;
+        } catch (ParseException e) {
+            return false;
+        }
+    }
     private List<String> getInputData(LinearLayout container) {
         List<String> data = new ArrayList<>();
         for (int i = 0; i < container.getChildCount(); i++) {
             LinearLayout inputLayout = (LinearLayout) container.getChildAt(i);
-            EditText editText = (EditText) inputLayout.getChildAt(0);
-            String input = editText.getText().toString().trim();
+            View firstChild = inputLayout.getChildAt(0);
+            String input = "";
+
+            if (firstChild instanceof EditText) {
+                input = ((EditText) firstChild).getText().toString().trim();
+            } else if (firstChild instanceof TextView) {
+                input = ((TextView) firstChild).getText().toString().trim();
+            }
+
             if (!input.isEmpty()) {
                 data.add(input);
             }
@@ -305,5 +398,6 @@ public class AddNewTourActivity extends BaseActivity {
         if (!compositeDisposable.isDisposed()) {
             compositeDisposable.dispose();
         }
+        LoadingUtil.removeLoading(AddNewTourActivity.this);
     }
 }

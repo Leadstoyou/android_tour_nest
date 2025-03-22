@@ -1,8 +1,9 @@
 package com.example.tour_nest.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Tour {
+public class Tour implements Serializable {
     private String id;
     private String name;
     private String description;
@@ -24,14 +25,11 @@ public class Tour {
     private int slot;
 
     private String categoryId;
-
+    private List<String> departureDates;
     public Tour() {
     }
 
-    public Tour(String name, String description, String thumbnail, List<String> gallery,
-                List<String> placesToVisit, List<String> includedServices, List<String> excludedServices,
-                List<String> cancellationPolicy, List<String> childPolicy, double price, int days, int nights,
-                String departure, String destination, String transportation, String region, int slot, String categoryId) {
+    public Tour(String name, String description, String thumbnail, List<String> gallery, List<String> placesToVisit, List<String> includedServices, List<String> excludedServices, List<String> cancellationPolicy, List<String> childPolicy, double price, int days, int nights, String departure, String destination, String transportation, String region, int slot, String categoryId, List<String> departureDates) {
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
@@ -50,6 +48,41 @@ public class Tour {
         this.region = region;
         this.slot = slot;
         this.categoryId = categoryId;
+        this.departureDates = departureDates;
+    }
+
+    @Override
+    public String toString() {
+        return "Tour{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", thumbnail='" + thumbnail + '\'' +
+                ", gallery=" + gallery +
+                ", placesToVisit=" + placesToVisit +
+                ", includedServices=" + includedServices +
+                ", excludedServices=" + excludedServices +
+                ", cancellationPolicy=" + cancellationPolicy +
+                ", childPolicy=" + childPolicy +
+                ", price=" + price +
+                ", days=" + days +
+                ", nights=" + nights +
+                ", departure='" + departure + '\'' +
+                ", destination='" + destination + '\'' +
+                ", transportation='" + transportation + '\'' +
+                ", region='" + region + '\'' +
+                ", slot=" + slot +
+                ", categoryId='" + categoryId + '\'' +
+                ", departureDates=" + departureDates +
+                '}';
+    }
+
+    public List<String> getDepartureDates() {
+        return departureDates;
+    }
+
+    public void setDepartureDates(List<String> departureDates) {
+        this.departureDates = departureDates;
     }
 
     public String getCategoryId() {
@@ -76,30 +109,6 @@ public class Tour {
         this.region = region;
     }
 
-
-    @Override
-    public String toString() {
-        return "Tour{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", thumbnail='" + thumbnail + '\'' +
-                ", gallery=" + gallery +
-                ", placesToVisit=" + placesToVisit +
-                ", includedServices=" + includedServices +
-                ", excludedServices=" + excludedServices +
-                ", cancellationPolicy=" + cancellationPolicy +
-                ", childPolicy=" + childPolicy +
-                ", price=" + price +
-                ", days=" + days +
-                ", nights=" + nights +
-                ", departure='" + departure + '\'' +
-                ", destination='" + destination + '\'' +
-                ", transportation='" + transportation + '\'' +
-                ", region='" + region + '\'' +
-                ", slot=" + slot +
-                '}';
-    }
 
     public String getId() {
         return id;

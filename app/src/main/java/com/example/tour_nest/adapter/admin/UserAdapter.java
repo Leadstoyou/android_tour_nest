@@ -53,8 +53,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     }
 
     public void updateList(List<User> newList) {
-        userList.clear();
-        userList.addAll(newList);
+        this.userList =newList; // Cập nhật danh sách thay vì chỉ clear & addAll
         notifyDataSetChanged();
     }
 

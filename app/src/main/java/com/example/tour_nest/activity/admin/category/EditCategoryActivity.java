@@ -1,5 +1,6 @@
 package com.example.tour_nest.activity.admin.category;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,20 +37,10 @@ public class EditCategoryActivity extends AppCompatActivity {
                 Toast.makeText(this, "Vui lòng nhập tên danh mục", Toast.LENGTH_SHORT).show();
                 return;
             }
+            CategoryService.getRef().update(categoryId,new Category(newName));
+            setResult(RESULT_OK);
+            finish();
 
-            CategoryService.update(categoryId, new Category(newName)).onResult(new FirebaseCallback<Category>() {
-                @Override
-                public void onSuccess(Category result) {
-                    Toast.makeText(EditCategoryActivity.this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
-                    setResult(RESULT_OK);
-                    finish();
-                }
-
-                @Override
-                public void onFailure(Exception e) {
-                    Toast.makeText(EditCategoryActivity.this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
         });
     }
 }

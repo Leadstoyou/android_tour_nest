@@ -6,9 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    tools:context=".activity.home.TourDetailActivity">
+    android:fitsSystemWindows="true"
+    tools:context=".activity.home.BookingActivity">
 
-    <!-- Back Button -->
     <ImageView
         android:id="@+id/btnBack"
         android:layout_width="24dp"
@@ -19,7 +19,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@android:color/black" />
 
-    <!-- Title -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
@@ -32,7 +31,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- ScrollView for content -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -46,7 +44,6 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Booking Details Section -->
             <TextView
                 android:id="@+id/tvBookingDetails"
                 android:layout_width="wrap_content"
@@ -69,36 +66,32 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <!-- Each Item -->
+                    <!-- Package -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
                         android:paddingVertical="8dp">
-
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_bookmark"
                             app:tint="@color/blue" />
-
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:orientation="vertical"
                             android:layout_marginStart="8dp">
-
                             <TextView
                                 android:text="Package"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="@android:color/darker_gray"
                                 android:textSize="14sp"/>
-
                             <TextView
-                                android:text="Cox’s Bazar Beach"
+                                android:id="@+id/tvPackage"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="@android:color/black"
@@ -107,23 +100,260 @@
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Repeat similar LinearLayout blocks for Duration, Passengers, Transport, etc. -->
+                    <!-- Duration -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingVertical="8dp">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_bookmark"
+                            app:tint="@color/blue" />
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginStart="8dp">
+                            <TextView
+                                android:text="Duration"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@android:color/darker_gray"
+                                android:textSize="14sp"/>
+                            <TextView
+                                android:id="@+id/tvDuration"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@android:color/black"
+                                android:textSize="16sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Transport -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingVertical="8dp">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_bookmark"
+                            app:tint="@color/blue" />
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginStart="8dp">
+                            <TextView
+                                android:text="Transport"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@android:color/darker_gray"
+                                android:textSize="14sp"/>
+                            <TextView
+                                android:id="@+id/tvTransport"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@android:color/black"
+                                android:textSize="16sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Departure -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingVertical="8dp">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_bookmark"
+                            app:tint="@color/blue" />
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginStart="8dp">
+                            <TextView
+                                android:text="Departure"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@android:color/darker_gray"
+                                android:textSize="14sp"/>
+                            <TextView
+                                android:id="@+id/tvDeparture"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@android:color/black"
+                                android:textSize="16sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Destination -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingVertical="8dp">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_bookmark"
+                            app:tint="@color/blue" />
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginStart="8dp">
+                            <TextView
+                                android:text="Destination"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@android:color/darker_gray"
+                                android:textSize="14sp"/>
+                            <TextView
+                                android:id="@+id/tvDestination"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@android:color/black"
+                                android:textSize="16sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+                    </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Payment Summary -->
+            <!-- Adult and Child Input -->
             <TextView
-                android:id="@+id/tvPaymentSummary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Payment Summary"
+                android:text="Passengers"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/black"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"/>
 
-            <!-- Payment Summary Card -->
+            <!-- Adult -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingVertical="8dp">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Adult"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnDecreaseAdult"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:text="-"
+                    android:textSize="24sp"
+                    app:backgroundTint="@color/grey"
+                    android:textColor="@color/blue"
+                    android:padding="0dp"
+                    android:gravity="center"
+                    app:cornerRadius="10dp" />
+                <TextView
+                    android:id="@+id/tvAdultCount"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:text="1"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:gravity="center"
+                    android:layout_marginHorizontal="8dp"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnIncreaseAdult"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:text="+"
+                    android:textSize="24sp"
+                    app:backgroundTint="@color/blue"
+                    android:textColor="@android:color/white"
+                    android:padding="0dp"
+                    android:gravity="center"
+                    app:cornerRadius="10dp" />
+            </LinearLayout>
+
+            <!-- Child -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingVertical="8dp">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Child"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnDecreaseChild"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:text="-"
+                    android:textSize="24sp"
+                    app:backgroundTint="@color/grey"
+                    android:textColor="@color/blue"
+                    android:padding="0dp"
+                    android:gravity="center"
+                    app:cornerRadius="10dp" />
+                <TextView
+                    android:id="@+id/tvChildCount"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:gravity="center"
+                    android:layout_marginHorizontal="8dp"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnIncreaseChild"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:text="+"
+                    android:textSize="24sp"
+                    app:backgroundTint="@color/blue"
+                    android:textColor="@android:color/white"
+                    android:padding="0dp"
+                    android:gravity="center"
+                    app:cornerRadius="10dp" />
+            </LinearLayout>
+            <!-- Departure Date Selection -->
+            <TextView
+                android:id="@+id/tvDepartureDateTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Departure Date"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"/>
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -136,13 +366,44 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <!-- Price Details -->
+                    <Spinner
+                        android:id="@+id/spinnerDepartureDates"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/edit_text"
+                        android:padding="8dp"/>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            <!-- Payment Summary -->
+            <TextView
+                android:id="@+id/tvPaymentSummary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Payment Summary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"/>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="4dp"
+                android:padding="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:paddingVertical="4dp">
-
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -150,23 +411,20 @@
                             android:text="Subtotal"
                             android:textColor="@android:color/black"
                             android:textSize="16sp"/>
-
                         <TextView
-                            android:text="$4800"
-                            android:textColor="@android:color/black"
+                            android:id="@+id/tvSubtotal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:textColor="@android:color/black"
                             android:textSize="16sp"
                             android:textStyle="bold"/>
                     </LinearLayout>
 
-                    <!-- Total -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:paddingVertical="4dp">
-
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -175,9 +433,8 @@
                             android:textColor="@android:color/black"
                             android:textSize="18sp"
                             android:textStyle="bold"/>
-
                         <TextView
-                            android:text="$4830"
+                            android:id="@+id/tvTotal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@android:color/black"
@@ -189,7 +446,6 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- Proceed to Checkout Button -->
     <Button
         android:id="@+id/btnProceedToCheckout"
         android:layout_width="match_parent"

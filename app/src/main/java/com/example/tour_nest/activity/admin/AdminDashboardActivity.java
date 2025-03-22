@@ -6,6 +6,9 @@ import android.widget.Button;
 
 import com.example.tour_nest.R;
 import com.example.tour_nest.activity.admin.category.AdminManageCategoriesActivity;
+import com.example.tour_nest.activity.admin.chat.AdminChatActivity;
+import com.example.tour_nest.activity.admin.order.AdminOrderListActivity;
+import com.example.tour_nest.activity.admin.statistic.AdminStatisticActivity;
 import com.example.tour_nest.activity.admin.tour.AdminTourListActivity;
 import com.example.tour_nest.activity.admin.user.AdminManageUserActivity;
 import com.example.tour_nest.activity.auth.LoginActivity;
@@ -26,7 +29,7 @@ public class AdminDashboardActivity extends BaseActivity {
         Button btnManageUsers = findViewById(R.id.btnManageUsers);
         Button btnReportsAnalytics = findViewById(R.id.btnReportsAnalytics);
         Button btnAdminLogout = findViewById(R.id.btnAdminLogout);
-
+        Button btnMessage = findViewById(R.id.btnAdminMessage);
         btnManageCategories.setOnClickListener(v -> {
             Intent intent = new Intent(AdminDashboardActivity.this, AdminManageCategoriesActivity.class);
             startActivity(intent);
@@ -37,24 +40,29 @@ public class AdminDashboardActivity extends BaseActivity {
             startActivity(intent);
         });
 
-//        btnManageBookings.setOnClickListener(v -> {
-//            Intent intent = new Intent(AdminDashboardActivity.this, ManageBookingsActivity.class);
-//            startActivity(intent);
-//        });
+        btnManageBookings.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminDashboardActivity.this, AdminOrderListActivity.class);
+            startActivity(intent);
+        });
 //
         btnManageUsers.setOnClickListener(v -> {
             Intent intent = new Intent(AdminDashboardActivity.this, AdminManageUserActivity.class);
             startActivity(intent);
         });
 //
-//        btnReportsAnalytics.setOnClickListener(v -> {
-//            Intent intent = new Intent(AdminDashboardActivity.this, ReportsAnalyticsActivity.class);
-//            startActivity(intent);
-//        });
-
-        btnAdminLogout.setOnClickListener(v->{
+        btnReportsAnalytics.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminDashboardActivity.this, AdminStatisticActivity.class);
+            startActivity(intent);
+        });
+        btnMessage.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminDashboardActivity.this, AdminChatActivity.class);
+            startActivity(intent);
+        });
+        btnAdminLogout.setOnClickListener(v -> {
             SharedPrefHelper.logout(this);
             startActivity(new Intent(AdminDashboardActivity.this, LoginActivity.class));
-            });
+            finishAffinity();
+        });
+
     }
 }

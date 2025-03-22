@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
+    android:fitsSystemWindows="true"
     tools:context=".activity.profile.ProfileDetailsActivity">
 
     <!-- Back Button -->
@@ -57,7 +58,9 @@
                 android:layout_height="60dp"
                 android:background="@drawable/circle_background"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_sponsor" />
+                android:src="@drawable/ic_sponsor"
+                android:clickable="true"
+                android:focusable="true" />
 
             <!-- User Info -->
             <LinearLayout
@@ -114,7 +117,7 @@
             android:background="@android:color/transparent"
             android:focusable="false"
             android:cursorVisible="false"
-            android:enabled="false"/>
+            android:enabled="false" />
 
         <View
             android:layout_width="match_parent"
@@ -144,34 +147,9 @@
             android:layout_height="1dp"
             android:layout_marginVertical="8dp"
             android:background="@android:color/darker_gray" />
-
-
-        <!-- Date of Birth -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Date of Birth"
-            android:textColor="@android:color/darker_gray"
-            android:textSize="14sp" />
-
-        <EditText
-            android:id="@+id/userDOB"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="01/01/1990"
-            android:textColor="@android:color/black"
-            android:textSize="16sp"
-            android:background="@android:color/transparent" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginVertical="8dp"
-            android:background="@android:color/darker_gray" />
-
     </LinearLayout>
 
-    <!-- Edit Profile Button -->
+    <!-- Save Changes Button -->
     <Button
         android:id="@+id/btnSaveChanges"
         android:layout_width="match_parent"

@@ -19,7 +19,9 @@ public class CategoryService<T> {
     public void onResult(FirebaseCallback<T> callback) {
         this.callback = callback;
     }
-
+    public static GenericRepository<Category> getRef(){
+        return categoryRepository;
+    }
     public static CategoryService<Category> create(Category category) {
         CategoryService<Category> service = new CategoryService<>();
         if (category == null || category.getName() == null || category.getName().isEmpty()) {
@@ -107,22 +109,6 @@ public class CategoryService<T> {
         return service;
     }
 
-    public static CategoryService<Category> update(String id, Category category) {
-        CategoryService<Category> service = new CategoryService<>();
-        if (id == null || id.isEmpty() || category == null || category.getName() == null || category.getName().isEmpty()) {
-            if (service.callback != null) {
-                service.callback.onFailure(new Exception("Dữ liệu danh mục không hợp lệ"));
-            }
-            return service;
-        }
-
-        category.setId(id);
-        categoryRepository.update(id, category);
-        if (service.callback != null) {
-            service.callback.onSuccess(category);
-        }
-        return service;
-    }
 
     public static CategoryService<Boolean> delete(String id) {
         CategoryService<Boolean> service = new CategoryService<>();

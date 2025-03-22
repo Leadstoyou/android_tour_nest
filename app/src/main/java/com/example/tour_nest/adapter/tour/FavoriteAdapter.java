@@ -1,6 +1,7 @@
 package com.example.tour_nest.adapter.tour;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.tour_nest.R;
+import com.example.tour_nest.activity.home.TourDetailActivity;
 import com.example.tour_nest.model.tour.FavoriteItem;
+import com.example.tour_nest.util.LogUtil;
 
 import java.util.List;
 
@@ -26,13 +29,23 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.Favori
     public static class FavoriteViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView, bookmarkIcon;
         TextView textViewPackageName, textViewRating;
-
+        String tourId;
         public FavoriteViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.imageViewPackage);
             bookmarkIcon = itemView.findViewById(R.id.bookmarkIcon);
             textViewPackageName = itemView.findViewById(R.id.textViewPackageName);
             textViewRating = itemView.findViewById(R.id.textViewRating);
+            itemView.setOnClickListener(v->{
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    Context context = v.getContext();
+                    Intent intent = new Intent(context, TourDetailActivity.class);
+                    LogUtil.logMessage("tourId :: " + tourId);
+                    intent.putExtra("tour_id", tourId);
+                    context.startActivity(intent);
+                }
+            });
         }
     }
 
@@ -48,7 +61,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.Favori
         FavoriteItem item = favoriteList.get(position);
         holder.textViewPackageName.setText(item.getPackageName());
         holder.textViewRating.setText(item.getRating());
-
+        holder.tourId = item.getId();
         Glide.with(context).load(item.getImageUrl()).into(holder.imageView);
     }
 

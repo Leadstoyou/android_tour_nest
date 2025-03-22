@@ -22,13 +22,18 @@ public class UserService<T> {
     public void onResult(FirebaseCallback<T> callback) {
         this.callback = callback;
     }
-
+    public static  GenericRepository<User> getRef(){
+        return userRepository;
+    }
     public static UserService<Boolean> register(User user) {
         UserService<Boolean> service = new UserService<>();
         userRepository.search("email", user.getEmail(), new FirebaseCallback<List<User>>() {
             @Override
             public void onSuccess(List<User> result) {
                 if (result.isEmpty()) {
+                    new Thread(()->{
+                        EmailSender.sendWelcomeEmail(user.getEmail(), user.getFullName());
+                    }).start();
                     userRepository.create(user);
                     if (service.callback != null) service.callback.onSuccess(true);
                 } else {
@@ -53,6 +58,7 @@ public class UserService<T> {
                     User newUser = new User(firebaseUser.getDisplayName(), firebaseUser.getEmail(), firebaseUser.getPhoneNumber(),
                             "123", Objects.requireNonNull(firebaseUser.getPhotoUrl()).toString(), Common.getCurrentDateByMillis());
                     newUser.setRole(Constant.USER_ROLE);
+                    newUser.setStatus(1);
                     userRepository.create(newUser);
                     service.callback.onSuccess(newUser);
                 } else {
@@ -117,7 +123,7 @@ public class UserService<T> {
 
     public static UserService<List<User>> getAllUsers() {
         UserService<List<User>> service = new UserService<>();
-        userRepository.getAll(new FirebaseCallback<List<User>>() {
+        userRepository.search("role",1,new FirebaseCallback<List<User>>() {
             @Override
             public void onSuccess(List<User> result) {
                 if (service.callback != null) service.callback.onSuccess(result);

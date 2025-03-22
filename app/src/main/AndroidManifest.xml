@@ -7,7 +7,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
 
     <application
         android:name=".base.MyApplication"
@@ -20,6 +22,27 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TourNest"
         tools:targetApi="31">
+        <activity
+            android:name=".activity.admin.chat.AdminUserChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.admin.chat.AdminChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.message.UserChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.admin.tour.AdminEditTourActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.admin.statistic.AdminStatisticActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.admin.order.AdminOrderListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.profile.OrderListActivity"
+            android:exported="false" />
         <activity
             android:name=".activity.admin.user.AdminManageUserActivity"
             android:exported="false" />
